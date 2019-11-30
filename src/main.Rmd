@@ -1,0 +1,185 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+url <- "https://raw.githubusercontent.com/sdbuit/callforecast/master/data/interim/02training.csv"
+df <- read.table(url, sep = ",", header = T)[,-1]
+#head(df)
+```
+
+```{r fig.width=8, fig.height=4, dpi=300}
+
+library(gam)
+par(bg='gray88')
+
+# train <- subset(df, df$month != 8)
+# test <- subset(df, df$month == 8)
+gam.fit <- gam(CV ~ as.factor(day) + s(AHT) + as.factor(hour) , data=df)
+
+error <- rep(NA, 10)
+for (i in c(1:100)) {
+    train <- sample(1:nrow(df), floor(.5*nrow(df)), replace=FALSE)
+    test <- df[-train, "CV"]
+    # train <- subset(df, df$month != 8)
+    # test <- subset(df, df$month == 8)
+    yhat <- predict(gam.fit, newdata = df[-train,])
+    error[i] <- mean((yhat - test)^2)
+    #plot(yhat,test)
+}
+cat('Model (test 1) MSE:\t', round(mean(error), 2))
+
+# summary(gam.fit)
+gam.fit$coefficients
+
+plot(gam.fit, residuals = TRUE)
+
+plot(gam.fit, se=T, col='blue')
+grid()
+
+
+plot(yhat, test, col='purple', xlab='Predicted Call Volume', ylab='Actual Call Volume', pch='x')
+abline(0, 1, col='goldenrod', lw=3)
+grid(c='darkgrey')
+
+
+
+plot(test, xlab='Observed', ylab='Predicted Call Volume', col='purple', 
+     pch='x')
+lines(yhat, col='goldenrod', lw=2.5)
+grid(c='darkgrey')
+
+
+
+# date <- test$time
+# calls <- yhat
+# handletime <- test$AHT
+
+# calls_answer_1 <- data.frame(date, calls, handletime)
+# 
+# write.csv(calls_answer_1, '../data/answer_volume_1.csv')
+
+```
+
+
+```{r fig.width=8, fig.height=4, dpi=300}
+par(bg='gray88')
+
+lm_model <- lm(CV ~ AHT + as.factor(hour) + as.factor(day), data=df)
+
+error <- rep(NA, 500)
+for (i in c(1:500)) {
+    train <- sample(1:nrow(df), floor(.7*nrow(df)), replace=FALSE)
+    test <- df[-train, "CV"]
+    yhat <- predict(lm_model, newdata = df[-train,])
+    error[i] <- mean((yhat - test)^2)
+    #plot(yhat,test)
+}
+cat('Model (test 1) MSE:\t', round(mean(error), 2))
+
+plot(lm_model)
+
+plot(yhat, test, col='dodgerblue', xlab='Predicted Call Volume', ylab='Actual Call Volume', pch='x',)
+abline(0, 1, col='goldenrod', lw=3)
+grid()
+
+plot(test, xlab='Observed Call Volume', ylab='Predicted Call Volume', col='dodgerblue', pch='x', bg='blue')
+lines(yhat, col='goldenrod', lw=2.0)
+grid()
+
+date <- df[-train, "time"]
+calls <- yhat
+
+
+calls_answers_1 <- data.frame(date, calls)
+#calls_answers_1
+
+summary(lm_model)
+```
+
+$$Y_{call ~ volume} = \beta_0 ~ + ~ \beta_1 \cdot (AHT) ~ + ~ \beta_{factor_i} \cdot (hour) ~ + ~ \beta_{factor_i} \cdot (day)$$
+
+```{r}
+
+```
+
+
+```{r}
+library(caret)
+gam_model <- train(CV ~ day + AHT + hour, 
+                   data = df,
+                   method = 'gam',
+                   trControl = trainControl(method = 'cv', number = 10))
+
+gam_model$finalModel
+```
+
+
+
+```{r}
+library(caret)
+
+model <- train(CV ~ as.factor(time24) + as.factor(day) + AHT,
+               data=df,
+               method = 'glm',
+               trControl=trainControl(
+                   method= "cv",
+                   number=10,
+                   verboseIter=FALSE
+               )
+)
+
+k=10
+fold=sample(1:k, nrow(df), replace=TRUE)
+cv.errors = matrix(NA, k)
+
+# 
+# train_control <- trainControl(method="CV", number=10)
+# model <- train(CV ~ as.factor(time24) + as.factor(day) +
+#                    AHT, data=df, trControl=train_control)
+
+
+print(model)
+
+```
+
+
+```{r}
+# Regression Tree
+library(tree)
+library(rpart)
+library(rpart.plot)
+
+error <- rep(NA, 500)    
+for (i in c(1:500)) {
+    train <- sample(1:nrow(df), floor(.7*nrow(df)),replace = FALSE )
+    tree_mod <- rpart(AHT ~ as.factor(closeshr01) + time24 + CV + minute,
+                 data=df, subset=train)
+    yhat <- predict(tree_mod,newdata=df[-train,])
+    test <- df[-train,"CV"]
+
+    error[i] <- mean(((yhat-test)[-train])^2)
+}
+cat('\nTree MSE:\t', round(mean(error), 2))
+
+error
+# rpart.plot(tree_mod)
+```
+```{r}
+error <- rep(NA, 100)    
+for (i in c(1:100)) {
+    train <- sample(1:nrow(df), floor(.7*nrow(df)),replace = FALSE )
+    tree_mod_AHT <- tree(AHT ~ as.factor(time24) + as.factor(day) + CV, 
+                     data=df, subset=train)
+    yhat <- predict(tree_mod_AHT,newdata=df[-train,])
+    test <- df[-train,"CV"]
+
+    error[i] <- mean(((yhat-test)[-train])^2)
+}
+cat('\nTree MSE:\t', round(mean(error), 2))
+
+
+```
+
+
