@@ -1,57 +1,41 @@
-# Statistical Hackathon
+# callforecast Hackathon
 
-## Part 1
+Sponsored by Weber State University and Clear View Live Data  Analytics
 
-`training.csv` contains information on the volume of
-inbound phone calls into the call center between 
-April 1st and August 31st 2018. 
+Originally developed for a statistical modeling competition, which placed **3rd** overall. This repo demonstrates how to forecast call-center volume and average handle time (AHT) in 30-minute intervals using machine-learning and statistical methods.
 
-Project
-    * Model the **call volume** (number of calls) and 
-    * **Average Handle Time** (AHT)
-        * average amount of time it takes an agent to handle the call.
-        * Handle time is “Agent Seconds”
-
-* **Call Volume** and **AHT** forecast should be broken out into 30 minute intervals.
-  * Columns needed for this are `Call Start` and `Agent seconds`
-
-* explanations for your model and analysis will be for the non-expert and aimed for an executive business meeting. 
- 
-* explain how you model the data (materials & methods) in a way that makes sense to non-experts, and you need to have a practical implication for the company.
-
-**Other Details**
-
-Complete the following predicted values for call volume and handle time for the following csv files: `answers_handletime.csv` Download answers_handletime.csv and `answers_volume.csv` Download answers_volume.csv. You need to fill the column Call.Volume and Handletime.
+## Table of Contents
+1. [Project Overview](#project-overview)
+2. [Data](#data)
+3. - [ ] TODO [Modeling Approach](#modeling-approach)
+4. - [ ] TODO [Results](#results)     
 
 ---
 
-## Part 2: Statistical Analysis
+## Project Overview
 
-Using `test.csv` and `training.csv`
+Call centers require accurate predictions of:
+1. **Call Volume (CV):** How many inbound calls arrive in each 30-minute interval.
+2. **Average Handle Time (AHT):** The average agent time spent on each call.
 
-**Task 1**
+By forecasting these metrics, companies can:
+- **Optimize staffing schedules** to reduce costs and wait times.
+- **Identify performance trends** to guide agent training.
+- **Improve infrastructure planning** and reduce idle agent time.
 
-* why a transformation was used on the y-variable
-* Explain why I created a variable called prime time for the input.
-* Improve the model and consider interaction terms
-* Calculate test MSE for your improved regression model
-* Create a random forest (or a bag or boosted regression) for handle time
-* Calculate MSE for the random forest
-
-**Task 2**
-
-Explain why I created a variable called prime time for the input.
-Improve the model and consider interaction terms
-State your final regression model and why interactions helped.
-Calculate your test MSE for the call volume regression model
-Create a regression tree
-Prune your regression tree
-Calculate your test MSE for your regression tree
+This codebase implements multiple models (including linear regression, GAM, and gradient boosting) to predict call volume and AHT using historical call-center data.
 
 ---
 
-**Environment Setup**
+## Data
+The dataset (`training.csv` and `test.csv`) contains:
+- Timestamps of each call (`Call Start`)
+- The length of time an agent spent on each call (`Agent seconds`)
+- Other potential features like day of week, time of day, etc.
 
-`uv init --name callforecast --python-preference only-managed -p 3.12`
+Data coverage:
+- [ ] TODO 
 
-`uv venv -p 3.12 --python-preference only-managed --system-site-packages`
+> **Note:** For AHT, calls with 0 agent seconds were excluded from modeling (as these likely represent hangups before agent interaction).
+
+---
