@@ -1,12 +1,9 @@
 .venv
-.vscode
-callforecast.egg-info
 
-data
+archive/*
 
-.ipynb_checkpoints
+data/*
 
-# R
-R
-main.nb.html
-*.Rmd
+src/*
+
+*.pdf
