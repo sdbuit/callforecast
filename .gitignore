@@ -1,9 +1,13 @@
 .venv
+.vscode
 
 archive/*
-
 data/*
 
 src/*
 
+*.R
 *.pdf
+*.md
+
+.gitignore
