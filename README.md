@@ -7,8 +7,8 @@ Originally developed for a statistical modeling competition, which placed **3rd*
 ## Table of Contents
 1. [Project Overview](#project-overview)
 2. [Data](#data)
-3. - [ ] TODO [Modeling Approach](#modeling-approach)
-4. - [ ] TODO [Results](#results)     
+- [ ] 3.  TODO [Modeling Approach](#modeling-approach)
+- [ ] 4.  TODO [Results](#results)     
 
 ---
 
